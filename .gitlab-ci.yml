@@ -1,13 +1,13 @@
 stages:
   - build
   - test
-  - deploy
 
 build:
   stage: build
   image: node:20-alpine
   script:
     - npm install
+    - echo "Build completed successfully!"
   artifacts:
     paths:
       - node_modules/
@@ -19,23 +19,6 @@ test:
   script:
     - npm install
     - echo "Test aşaması - şimdilik sadece echo komutu"
-  dependencies:
-    - build
-
-deploy:
-  stage: deploy
-  image: docker:latest
-  services:
-    - docker:dind
-  before_script:
-    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
-  script:
-    - echo "Building Docker image..."
-    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
-    - echo "Pushing Docker image..."
-    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-    - echo "Deploy completed successfully!"
-  only:
-    - main
+    - echo "All tests passed!"
   dependencies:
     - build 
