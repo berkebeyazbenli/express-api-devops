@@ -27,9 +27,14 @@ deploy:
   image: docker:latest
   services:
     - docker:dind
+  before_script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
   script:
-    - docker build -t registry.gitlab.com/berkebeyazbenli/myapp:$CI_COMMIT_SHA .
-    - docker push registry.gitlab.com/berkebeyazbenli/myapp:$CI_COMMIT_SHA
+    - echo "Building Docker image..."
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+    - echo "Pushing Docker image..."
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - echo "Deploy completed successfully!"
   only:
     - main
   dependencies:
